@@ -1,0 +1,29 @@
+#!/bin/bash
+# Script to inittiate KVM domains lab
+# Diego Castelo Branco
+
+VMs="Server-Centos7 Desktop-Centos7"
+
+function is_superuser()
+{
+	if [ "$(id -u)" -ne 0 ]; then
+		 echo "Do you not a superuser! User sudo!"
+		 sintaxe
+		 exit 1
+	fi	
+}
+
+function sintaxe()
+{	
+	echo " usage: $(basename $0)"
+}
+
+## BEGIN SCRIPT
+
+is_superuser
+
+for V in $VMs;do
+	echo "Inittiate VM: $V..."
+	virsh start "$V"
+	virt-viewer "$V" &
+done

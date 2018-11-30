@@ -1,0 +1,52 @@
+#!/bin/bash
+
+SERVER_NAME="Server-Centos7"
+DESKTOP_NAME="Desktop-Centos7"
+SNAPSHOT_NAME="Inicial"
+
+function is_superuser()
+{
+	if [ "$(id -u)" -ne 0 ]; then
+		 echo "Do you not a superuser! User sudo!"
+		 sintaxe
+		 exit 1
+	fi	
+}
+
+function sintaxe()
+{	
+	echo " usage: $(basename $0) server|desktop|todos|all"
+}
+
+function restaurarSnapshot()
+{
+	virsh snapshot-revert $1 $SNAPSHOT_NAME
+	echo "Rebuild machine \"$1\" done!"
+}
+
+## BEGIN SCRIPT
+
+is_superuser
+
+echo "Refactore virtual machines..."
+
+case $1 in
+	server)
+		restaurarSnapshot $SERVER_NAME
+		;;
+	desktop)
+		restaurarSnapshot $DESKTOP_NAME
+	
+		;;
+	all|todos)
+		restaurarSnapshot $SERVER_NAME
+		restaurarSnapshot $DESKTOP_NAME
+		## Iniciando as maquinas		
+		./lab-rhce-start   
+		;;
+	*)
+		sintaxe
+		;;
+esac
+
+
